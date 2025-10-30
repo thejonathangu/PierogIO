@@ -64,12 +64,14 @@ function applyCoupon(code, order) {
   }
   
   if (code === 'FIRST10') {
-    let discount = -0.10;
     let subtotal = 0;
     for (const item of order.items) {
       subtotal += item.unitPriceCents * item.qty;
     }
-    return Math.floor(subtotal * discount);
+    // BUG: Should check if subtotal >= 2000 (i.e., >= $20)
+    // According to README: "FIRST10: 10% off orders ≥ $20"
+    // But this applies the discount regardless of order size
+    return Math.floor(subtotal * 0.10);
   }
   
   return 0;
