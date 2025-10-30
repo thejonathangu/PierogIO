@@ -2,6 +2,16 @@ const fc = require('fast-check');
 const { total } = require('../../src/total');
 const { referenceTotal } = require('../../src/reference');
 
+/**
+ * Property-Based Testing for PierogIO
+ * 
+ * Properties to test:
+ * - Preservation: non-negative, integers, bounded tax/discounts
+ * - Metamorphic: monotonicity, commutativity, scaling
+ * - Differential: matches reference implementation
+ * - Invariants: business rules (thresholds, discounts, tax rates)
+ * - Boundaries: threshold behavior at $20, $30, $40, $50, $100
+ */
 describe('Property-Based Tests for Orders', () => {
   
   // Arbitrary generators
@@ -42,7 +52,6 @@ describe('Property-Based Tests for Orders', () => {
   
   describe('Invariants', () => {
     
-    // Here's an example preservation property!
     it('total should always be non-negative integer', () => {
       fc.assert(
         fc.property(orderArb, contextArb, (order, context) => {

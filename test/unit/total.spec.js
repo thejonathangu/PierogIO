@@ -35,6 +35,49 @@ describe('Order Calculations', () => {
       expect(orderTotal).toBeGreaterThan(0);
       expect(Number.isInteger(orderTotal)).toBe(true);
     });
+
+    it('should truncate large totals (>$100) to whole dollars', () => {
+      // Large order that should be truncated to whole dollars
+      const order = {
+        items: [
+          {
+            sku: 'P24-POTATO',
+            title: '24-pack Potato',
+            kind: 'hot',
+            filling: 'potato',
+            qty: 24,
+            unitPriceCents: 2399, // $23.99
+            addOns: ['sour-cream', 'fried-onion', 'bacon-bits'], // adds $4.47 per pack
+          },
+          {
+            sku: 'P12-POTATO',
+            title: '12-pack Potato',
+            kind: 'hot',
+            filling: 'potato',
+            qty: 12,
+            unitPriceCents: 1299, // $12.99
+            addOns: [],
+          }
+        ]
+      };
+      
+      const context = {
+        profile: { tier: 'guest' },
+        delivery: {
+          zone: 'outer',
+          rush: true,
+        },
+      };
+      
+      const orderTotal = total(order, context);
+      
+      // Total should be > $100 (10000 cents)
+      expect(orderTotal).toBeGreaterThan(10000);
+      
+      // When total > $100, it should be truncated to whole dollars
+      // Meaning the last two digits should be "00"
+      expect(orderTotal % 100).toBe(0);
+    });
   });
 
 });
